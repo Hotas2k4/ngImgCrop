@@ -1,31 +1,66 @@
-# ngImgCrop
+## Live demo
 
-Simple Image Crop directive for AngularJS. Enables to crop a circle or a square out of an image.
+[Codepen: Circle + Chargement Crop](http://codepen.io/Crackeraki/pen/avYNKP)<br>
+[Codepen: Square + Init Url Crop + Maximum rendered image](http://codepen.io/Crackeraki/pen/QjmNVM)<br>
+[Codepen: Rectangle Crop](http://codepen.io/Crackeraki/pen/XmEdPx)<br>
+[Codepen: Rectangle With Aspect Crop](http://codepen.io/Crackeraki/pen/zvWqJM)<br>
+[Codepen: Rectangle + Aspect + Array Crop](http://codepen.io/Neftedollar/pen/YydwNB)<br>
+
+## Future Plan / Bug
+
+1) Add option to init cropper area to max size as much as possible.
+
+2) Add option to not resize cropper area on siders.
+
+3) Add option to set fixed Height or Width of the crop area.
+
+4) Wrap input(file) within plugin, so it don't have any load problems, like with angular material dialog. Make in it an area with a message inside to click for upload new file. This will be by option enabled. Rebuild all demo with this feature. Add button on work space to add new image if image given, make full options for that.
+
+5) Add filters apply. Make an easy way to create new filters. Add some basic filters like Brightness,Contrast,Blur etc.
+
+6) Add option to export original image resized as dataURL.
+
+# ngImgCropFullExtended
+
+Simple Image Crop directive for AngularJS. Enables to crop a circle, a square or a rectangle out of an image.
 
 ## Screenshots
 
-![Circle Crop](/screenshots/circle.jpg "Circle Crop")
+Source image by Edgaras Maselskis
 
-![Square Crop](/screenshots/square.jpg "Square Crop")
+![Circle Crop](https://raw.githubusercontent.com/CrackerakiUA/ngImgCropFullExtended/master/screenshots/circle.png "Circle Crop")
 
-![Rectangle Crop](/screenshots/rectangle.jpg "Rectangle Crop")
+![Square Crop](https://raw.githubusercontent.com/CrackerakiUA/ngImgCropFullExtended/master/screenshots/square.png "Square Crop")
 
-## Live demo
-
-[Live demo on JSFiddle](http://jsfiddle.net/alexk111/rw6q9/)
+![Rectangle Crop](https://raw.githubusercontent.com/CrackerakiUA/ngImgCropFullExtended/master/screenshots/rectangle.png "Rectangle Crop")
 
 ## Requirements
 
- - AngularJS
- - Modern Browser supporting <canvas>
+- AngularJS
+- Modern Browser supporting <canvas>
+
+## Browser/device support
+
+### PC
+
+| IE | Edge | Firefox | Chrome  |
+| --- | ---- | ------- | ------- |
+| 11 |  12  |    44   |    45   |
+
+### Mobile
+
+|   iOS Safari  | Chrome | Firefox |
+| ------------- | ------ | ------- |
+|      9        |   46   |    41   |
 
 ## Installing
 
 ### Download
 
-You have two options to get the files:
-- [Download ngImgCrop](https://github.com/alexk111/ngImgCrop/archive/master.zip) files from GitHub.
-- Use Bower to download the files. Just run `bower install ngImgCrop`.
+You have three options to get the files:
+- [Download ngImgCropExtended](https://github.com/CrackerakiUA/ngImgCropExtended/archive/master.zip) files from GitHub.
+- Use Bower to download the files. Just run `bower install ngImgCropFullExtended`.
+- Use Meteor to download the files. Just run `meteor add correpw:ng-img-crop-full-extended`.
 
 ### Add files
 
@@ -56,6 +91,10 @@ var myAppModule = angular.module('MyApp', ['ngImgCrop']);
 ## Result image
 
 The result image will always be a square for the both circle and square area types. It's highly recommended to store the image as a square on your back-end, because this will enable you to easily update your pics later, if you decide to implement some design changes. Showing a square image as a circle on the front-end is not a problem - it is as easy as adding a *border-radius* style for that image in a css.
+
+* Notice for mobile device:
+Using Data URI is very slow on mobile device, 6x slower. (http://www.mobify.com/blog/data-uris-are-slow-on-mobile/)
+Use instead blobUrl.
 
 ## Example code
 
@@ -112,13 +151,20 @@ The following code enables to select an image using a file input and crop it. Th
 <img-crop
     image="{string}"
     result-image="{string}"
+    result-array-image="{array}"
+    result-blob="{string}"
+    url-blob="{string}"
     area-coords="myAreaCoords"
    [change-on-fly="{boolean}"]
    [area-type="{circle|square|rectangle}"]
-   [area-min-size="{number}"]
-   [result-image-size="{number}"]
+   [area-min-size="{ number|{w:number,h:number} }"]
+   [result-image-size="{ number|{w:number,h:number}|[{w:number,h:number},{w:number,h:number},...] }"]
    [result-image-format="{string}"]
    [result-image-quality="{number}"]
+   [aspect-ratio="{number}"]
+   [dominant-color="{string}"]
+   [palette-color="{string}"]
+   [palette-color-length="{number}"]
    [on-change="{expression}"]
    [on-load-begin="{expression"]
    [on-load-done="{expression"]
@@ -130,9 +176,21 @@ The following code enables to select an image using a file input and crop it. Th
 
 Assignable angular expression to data-bind to. NgImgCrop gets an image for cropping from it.
 
+* Notice for mobile device:
+Using Data URI is very slow on mobile device, 6x slower. (http://www.mobify.com/blog/data-uris-are-slow-on-mobile/)
+Provide instead a blob.
+
 ### result-image
 
 Assignable angular expression to data-bind to. NgImgCrop puts a data uri of a cropped image into it.
+
+### result-blob
+
+Assignable angular expression to data-bind to. NgImgCrop puts a blob of a cropped image into it.
+
+### url-blob
+
+Assignable angular expression to data-bind to. NgImgCrop puts an url blob of a cropped image into it.
 
 ### change-on-fly
 
@@ -148,7 +206,13 @@ Assignable angular expression to data-bind to. NgImgCrop puts a data uri of a cr
 
 ### result-image-size
 
-*Optional*. Width/height of the result image (in pixels). Default: 200.
+*Optional*. Width/height of the result image (in pixels). Default: 200. 
+'selection' renders an image of the size of the area selected.
+'max' maximizes the rendered image.
+
+### result-array-image
+
+While you have added an array inside of option result-image-size you will have option to get array of dataURI alogside with width and height requested.
 
 ### result-image-format
 
@@ -157,6 +221,22 @@ Assignable angular expression to data-bind to. NgImgCrop puts a data uri of a cr
 ### result-image-quality
 
 *Optional*. Quality of result image. Possible values between 0.0 and 1.0 inclusive. Default: browser default.
+
+### aspect-ratio
+
+*Optional*. For rectangle area type. Maintain aspect ratio by scale width/height number.
+
+### dominant-color
+
+*Optional*. Provide dominant color for image using color-thief (https://github.com/lokesh/color-thief).
+
+### palette-color
+
+*Optional*. Provide a color palette for image using color-thief (https://github.com/lokesh/color-thief).
+
+### palette-color-length
+
+*Optional*. Provide a color palette for image using color-thief (https://github.com/lokesh/color-thief).
 
 ### on-change
 
@@ -174,8 +254,12 @@ Assignable angular expression to data-bind to. NgImgCrop puts a data uri of a cr
 
 *Optional*. Expression to evaluate when the source image didn't load.
 
+### chargement
+
+*Optional*. Allow you to modify text of loading message.
+
 
 ## License
 
-See the [LICENSE](https://github.com/alexk111/ngImgCrop/blob/master/LICENSE) file.
+See the [LICENSE](https://github.com/alexk111/CrackerakiUA/blob/master/LICENSE) file.
 
