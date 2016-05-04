@@ -197,6 +197,7 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
       events.trigger('image-updated');
       if(!!imageSource) {
         var newImage = new Image();
+        newImage.crossOrigin = 'anonymous';
         newImage.onload = function(){
           events.trigger('load-done');
           image=newImage;
